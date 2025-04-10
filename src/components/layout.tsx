@@ -3,7 +3,6 @@ import { Button } from "./ui/button";
 import useAuth from "..//hooks/useAuth";
 import { useEffect } from "react";
 import { useUserContext } from "../Context/UserContext";
-import { useTranslation } from "react-i18next";
 
 export default function Layout() {
   const { name, email } = useUserContext();
@@ -11,7 +10,6 @@ export default function Layout() {
   const Auth = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const { t, i18n } = useTranslation();
 
 
 
@@ -23,7 +21,6 @@ export default function Layout() {
   return (
     <div
       className="p-4 grid grid-cols-5 xl:grid-cols-6 h-screen bg-[#f7f7f7] overflow-hidden"
-      dir={i18n.language == "ar" ? "rtl" : "ltr"}
     >
       <aside className="hidden lg:flex flex-col  col-span-1 border  rounded-2xl py-4 bg-background">
         <div>
@@ -46,7 +43,7 @@ export default function Layout() {
             disabled={isLoggingOut}
             className=" w-full tex"
           >
-            {t("log")}
+            Log out
           </Button>
         </div>
       </aside>

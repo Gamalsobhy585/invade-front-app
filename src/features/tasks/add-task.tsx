@@ -5,17 +5,18 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-  } from "@/components/ui/form";
+  } from "../../components/ui/form";
   import { taskSchema} from "./schemas";
   import { useForm } from "react-hook-form";
   import { zodResolver } from "@hookform/resolvers/zod";
   import { z } from "zod";
-  import { Input } from "@/components/ui/input";
-  import { Button } from "@/components/ui/button";
+  import { Input } from "../../components/ui/input";
+  import { Button } from "../../components/ui/button";
   import { toast } from "react-toastify";
   import { Task } from "./type";
   import { useEffect } from "react";
-  import { useTranslation } from "react-i18next";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select";
+import { Textarea } from "../../components/ui/textarea";
 
   
   interface AddTaskProps {
@@ -30,26 +31,34 @@ import {
     isViewMode = false, 
     isEditMode = false, 
     initialData  }: AddTaskProps) {
-      const { t, i18n } = useTranslation();
-      const isRTL = i18n.language === "ar";
 
       const form = useForm<z.infer<typeof taskSchema>>({
-        resolver: zodResolver(isEditMode ? taskSchema : taskSchema),
+        resolver: zodResolver(taskSchema),
         defaultValues: {
-          promo_code: initialData?.promo_code || "",
-          percentage: initialData?.percentage || 0,
+          title: initialData?.title || "",
+          description: initialData?.description || "",
+          status: initialData?.status || "1", 
+          due_date: initialData?.due_date || "",
+          category_id: initialData?.category_id || "",
         },
       });
+
+
+      
+
     
       useEffect(() => {
         if (initialData) {
           form.reset({
-            promo_code: initialData.promo_code,
-            percentage: parseFloat(String(initialData.percentage)),
+            title: initialData.title,
+            description: initialData.description,
+            status: initialData.status,
+            due_date: initialData.due_date,
+            category_id: initialData.category_id,
           });
         }
       }, [initialData, form]);
-  
+
       async function onSubmitHandler(values: z.infer<typeof taskSchema>) {
         try {
           if (isEditMode && onSubmit) {
@@ -65,65 +74,148 @@ import {
       }
 
     return (
-      <Form {...form} >
-  <form className="space-y-2 mt-4" onSubmit={form.handleSubmit(onSubmitHandler)}>
-    {/* Task Field */}
-    <FormField
-  name="promo_code"
-  control={form.control}
-  render={({ field }) => (
-    <FormItem className={`${isRTL ? "text-right" : "text-left"} w-full`}>
-      <FormLabel className="w-full block">
-        {t("task.promo_code_label")}
-      </FormLabel>
-      <FormControl>
-        <Input
-          type="text"
-          placeholder={t("task.promo_code_placeholder")}
-          className={`w-full rounded-lg py-6 ${isRTL ? "text-right" : "text-left"}`}
-          disabled={isViewMode}
-          dir={isRTL ? "rtl" : "ltr"}
-          {...field}
+      <Form {...form}>
+      <form className="space-y-4 mt-4" onSubmit={form.handleSubmit(onSubmitHandler)}>
+        {/* Title Field */}
+        <FormField
+          name="title"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="w-full block">
+                Title
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="Enter task title"
+                  className="w-full rounded-lg py-6"
+                  disabled={isViewMode}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-
-    {/* Percentage Field */}
-    <FormField
-  name="percentage"
-  control={form.control}
-  render={({ field }) => (
-    <FormItem className={`${isRTL ? "text-right" : "text-left"} w-full`}>
-      <FormLabel className="w-full block">
-        {t("task.percentage_label")}
-      </FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          placeholder={t("task.percentage_placeholder")}
-          className={`w-full rounded-lg py-6 ${isRTL ? "text-right" : "text-left"}`}
-          disabled={isViewMode}
-          dir={isRTL ? "rtl" : "ltr"}
-          onFocus={(e) => e.target.select()}
-          onChange={(e) => field.onChange(Number(e.target.value))}
+  
+        {/* Description Field */}
+        <FormField
+          name="description"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="w-full block">
+                Description
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Enter task description"
+                  className="w-full rounded-lg min-h-24"
+                  disabled={isViewMode}
+                  {...field}
+                  value={field.value || ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-
-    {/* Submit Button */}
-    {!isViewMode && (
-      <Button type="submit" className="mt-4">
-        {isEditMode ? t("task.update_button") : t("task.add_button")}
-      </Button>
-    )}
-  </form>
-      </Form>
+  
+        {/* Status Field */}
+        <FormField
+          name="status"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="w-full block">
+                Status
+              </FormLabel>
+              <FormControl>
+                <Select
+                  disabled={isViewMode}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <SelectTrigger className="w-full rounded-lg py-6">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Pending</SelectItem>
+                    <SelectItem value="2">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+  
+        {/* Due Date Field */}
+        <FormField
+          name="due_date"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="w-full block">
+                Due Date
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="date"
+                  className="w-full rounded-lg py-6"
+                  disabled={isViewMode}
+                  {...field}
+                  value={field.value || ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+  
+        {/* Category Field */}
+        <FormField
+          name="category_id"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="w-full block">
+                Category
+              </FormLabel>
+              <FormControl>
+                <Select
+                  disabled={isViewMode}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value || ""}
+                >
+                  <SelectTrigger className="w-full rounded-lg py-6">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories?.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+  
+        {/* Submit Button */}
+        {!isViewMode && (
+          <Button type="submit" className="mt-4">
+            {isEditMode ? "Update Task" : "Add Task"}
+          </Button>
+        )}
+      </form>
+    </Form>
 
     );
   }

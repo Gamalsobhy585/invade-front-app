@@ -10,7 +10,6 @@ import Loader from "./components/loader";
 const Login = React.lazy(() => import("./pages/login"));
 const Register = React.lazy(() => import("./pages/register"));
 const Tasks = React.lazy(() => import("./pages/tasks"));
-const Profile = React.lazy(() => import("./pages/profile"));
 
 
 
@@ -31,7 +30,6 @@ const App: React.FC = () => {
 
   const userRoutes = [
     { path: "/", element: <Tasks /> },
-    { path: "/profile", element: <Profile /> },
   
   ];
 

@@ -1,20 +1,28 @@
 import { z } from "zod"; 
-import { taskSchema} from "@/features/tasks/schemas";
+import { taskSchema} from "./schemas";
 
 const token = localStorage.getItem("token");
-export const searchTasks = async ({
+
+
+
+
+//
+export const getTasks = async ({
   page = 1,
   query = "",
+  filter = "",
 }: {
   page: number;
   query?: string;
+  filter?: string;
 }) => {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/tasks?query=${query}&page=${page}`,
+      `${import.meta.env.VITE_BASE_URL}/tasks?query=${query}&filter=${filter}&page=${page}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Accept-Language': 'en-US'
         },
       }
     );
@@ -35,6 +43,8 @@ export async function getTask(id: string) {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/tasks/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        'Accept-Language': 'en-US'
+
       },
     });
     if (!res.ok) {
@@ -56,6 +66,8 @@ export async function updateTask(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        'Accept-Language': 'en-US'
+
       },
       body: JSON.stringify(task),
     });
@@ -76,6 +88,8 @@ export async function createTask(task: z.infer<typeof taskSchema>) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        'Accept-Language': 'en-US'
+
       },
       body: JSON.stringify(task),
       
@@ -98,6 +112,8 @@ export async function deleteTask(id: string) {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
+        'Accept-Language': 'en-US'
+
       },
     });
 
@@ -107,5 +123,27 @@ export async function deleteTask(id: string) {
     return { success: false, error: error instanceof Error ? error.message : "An unknown error occurred" };
   }
 }
+
+export async function getCategories(){
+  try{
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/categories`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Accept-Language': 'en-US'
+
+      },
+    });
+    const data = await res.json();
+    return data.data;
+  }catch(error){
+    return { success: false, error: error instanceof Error ? error.message : "An unknown error occurred" };
+  }
+
+}
+
+
+
+
 
 

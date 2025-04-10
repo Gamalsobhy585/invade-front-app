@@ -13,7 +13,7 @@ import {
 import { Dialog, DialogContent, DialogTrigger } from "../../components/ui/dialog";
 import { Button } from "../../components/ui/button";
 import { useState } from "react";
-import { Task } from './type';
+import { Category, Task } from './type';
 import { Input } from "../../components/ui/input";
 import {Table,TableBody, TableCell,TableHead,TableHeader,TableRow,} from "../../components/ui/table";
 import { CirclePlus } from "lucide-react";
@@ -21,17 +21,23 @@ import { AddTask } from "./add-task";
 import { z } from "zod";
 import { taskSchema } from "./schemas";
 import { getTaskColumns } from "./columns";
-import { useTranslation } from "react-i18next";
 
 
 
 interface TasksTableProps {
   tasks: Task[];
+  categories:Category;
+  isCategoryDataLoading:boolean;
+  isCategoryDataError:boolean;
+  categoryError:string;
+  
   isLoading: boolean;
   error: string | null;
   currentPage: number;
   onPageChange: (page: number) => void;
   searchQuery: string;
+  filter:string;
+  onFilterChange(filter: string): void;
   onSearchChange: (query: string) => void;
   onDelete: (id: string) => void; 
   onShow: (params:{id: string}) => void;
@@ -39,9 +45,12 @@ interface TasksTableProps {
   selectedTask: Task | null; 
   setSelectedTask: (task: Task | null) => void; 
     
-  onAdd: (taskData: {
-    promo_code: string;
-    percentage: number;
+  onAdd: (task: {
+    title: string;
+    status: "1" | "2";
+    description?: string | null;
+    due_date?: string | null;
+    category_id?: string | null;
   }) => void;}
 
 export function TasksTable({
@@ -51,15 +60,19 @@ export function TasksTable({
   currentPage,
   onPageChange,
   searchQuery,
+  filter,
+  onFilterChange,
+  categories,
+  isCategoryDataLoading,
+  isCategoryDataError,
+  categoryError,
   onSearchChange,
   onDelete,
   onAdd,
   onShow,
   onUpdate,
 }: TasksTableProps) {
-    const { t, i18n } = useTranslation();
-  const isRTL = i18n.dir() === "rtl";
-  const columns = getTaskColumns(isRTL);
+  const columns = getTaskColumns();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -109,51 +122,64 @@ export function TasksTable({
 
   return (
     <div className="w-full">
-      <div className="flex justify-between items-center py-4">
-      <Input
-          placeholder={t("task.search_placeholder")}
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className={`max-w-sm ${isRTL ? "text-right" : "text-left"}`}
+    <div className="flex justify-between items-center py-4">
+    <div className="flex items-center gap-4">
+      <Input 
+        placeholder="Search" 
+        value={searchQuery} 
+        onChange={(e) => onSearchChange(e.target.value)} 
+        className="max-w-sm" 
+      />
+       <select id="statusFilter" 
+          className="w-full appearance-none bg-white border border-gray-200 shadow-sm px-4 py-2 pr-8 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => onFilterChange(e.target.value)}       
+          defaultValue={filter || "all"}
+
+          value={filter || "all"}>
+          <option value="all" selected={filter === "all" || !filter}>All</option>
+          <option value="pending" selected={filter === "pending"}>Pending</option>
+          <option value="completed" selected={filter === "completed"}>Completed</option>
+        </select>
+    
+    </div>
+
+  {/* Action Buttons */}
+  <div className="flex items-center gap-1">
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <CirclePlus
+          stroke="#DF0612"
+          size={30}
+          className="cursor-pointer"
+          aria-label="Add Task"
         />
-        <div className="flex items-center gap-1">
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <CirclePlus
-                stroke="#DF0612"
-                size={30}
-                className="cursor-pointer"
-                aria-label={t("task.add_new")}
-              />
-            </DialogTrigger>
-            <DialogContent className="w-1/3 md:rounded-3xl">
-              <AddTask onAdd={onAdd} />
-            </DialogContent>
-          </Dialog>
-          <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-
-        <DialogContent className="w-1/3 md:rounded-3xl">
-          <AddTask 
-            isViewMode={true} 
-            initialData={selectedTask} 
-            onShow={onShow}
-          />
-        </DialogContent>
-          </Dialog>
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-
-        <DialogContent className="w-1/3 md:rounded-3xl">
-          <AddTask
+      </DialogTrigger>
+      <DialogContent className="w-1/3 md:rounded-3xl">
+        <AddTask onAdd={onAdd} />
+      </DialogContent>
+    </Dialog>
+    <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+      <DialogContent className="w-1/3 md:rounded-3xl">
+        <AddTask 
+          isViewMode={true} 
+          initialData={selectedTask} 
+          onShow={onShow} 
+        />
+      </DialogContent>
+    </Dialog>
+    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <DialogContent className="w-1/3 md:rounded-3xl">
+        <AddTask
           isEditMode={true}
           initialData={selectedTask}
           onSubmit={(data) =>
             selectedTask && onUpdate({ id: selectedTask.id, data })
-           }
-           />
-        </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+          }
+        />
+      </DialogContent>
+    </Dialog>
+  </div>
+</div>
       <div className="rounded-2xl border bg-background">
         <Table>
           <TableHeader>
@@ -218,7 +244,7 @@ export function TasksTable({
       </div>
     
       <div
-        className={`flex fixed ${isRTL ? "left-[4%]" : "right-[4%]"} bottom-[2%] items-center justify-end space-x-2 py-4`}
+        className='flex fixed "right-[4%]"} bottom-[2%] items-center justify-end space-x-2 py-4'
       >
         <Button
           variant="outline"
@@ -226,14 +252,14 @@ export function TasksTable({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          {t("common.previous")}
+        previous
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => onPageChange(currentPage + 1)}
         >
-          {t("common.next")}
+          Next
         </Button>
       </div>
     </div>

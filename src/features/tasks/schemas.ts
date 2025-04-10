@@ -1,12 +1,18 @@
 import { z } from "zod";
-import i18next from "i18next";
 
-const getMessage = (key: string) => i18next.t(key);
 
 export const taskSchema = z.object({
-  promo_code: z.string().min(1, getMessage("task_validation.promo_code_required")),
-  percentage: z
-    .number()
-    .positive(getMessage("task_validation.percentage_positive"))
-    .max(100, getMessage("task_validation.percentage_max")),
+  title: z
+    .string()
+    .min(1, { message: ("title required") })
+    .max(255, { message: ("title shouldn't exceed 255 characters ") }),
+  description: z
+    .string()
+    .nullable()
+    .optional(),
+  status: z.enum(["1", "2"], {
+    errorMap: () => ({ message: ("status of task required ") }),
+  }),
+  due_date: z.string().nullable().optional(),
+  category_id: z.string().nullable().optional(),
 });

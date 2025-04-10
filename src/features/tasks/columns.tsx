@@ -1,15 +1,13 @@
 import { ColumnDef,Row } from "@tanstack/react-table";
-import { Task } from "@/features/tasks/type";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+import { statusMap, Task } from "./type";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Button } from "../../components/ui/button";
 import {  SquarePen, Eye, Trash2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 
 
 
-export const getPromoCodeColumns = (isRTL: boolean): ColumnDef<Task>[] => {
-  const { t } = useTranslation();
+export const getTaskColumns = (): ColumnDef<Task>[] => {
 
   return [
     {
@@ -22,7 +20,7 @@ export const getPromoCodeColumns = (isRTL: boolean): ColumnDef<Task>[] => {
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label={t("common.select_all")}
+          aria-label={("select all")}
         />
       ),
       cell: ({ row }) => (
@@ -30,7 +28,7 @@ export const getPromoCodeColumns = (isRTL: boolean): ColumnDef<Task>[] => {
           className="mx-2"
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label={t("common.select_row")}
+          aria-label={("select row")}
         />
       ),
       enableSorting: false,
@@ -38,52 +36,93 @@ export const getPromoCodeColumns = (isRTL: boolean): ColumnDef<Task>[] => {
     },
     {
       accessorKey: "id",
-      header: t("promo_code.id_label"),
+      header: ("id"),
       cell: ({ row }) => (
-        <div className={`capitalize ${isRTL ? "text-center" : "text-center"}`}>
+        <div className={ "text-center"}>
           {row.getValue("id")}
         </div>
       ),
     },
     {
-      accessorKey: "promo_code",
+      accessorKey: "title",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className={`w-full ${isRTL ? "flex-row-reverse" : ""}`}
+          className={`w-full`}
         >
-          {t("promo_code.name_label")}
+          {("title")}
         </Button>
       ),
       cell: ({ row }) => (
-        <div className={`lowercase ${isRTL ? "text-center" : "text-center"}`}>
-          {row.getValue("promo_code")}
+        <div className={`${  "text-center" }`}>
+          {row.getValue("title")}
         </div>
       ),
     },
     {
-      accessorKey: "percentage",
+      accessorKey: "category",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className={`w-full ${isRTL ? "flex-row-reverse" : ""}`}
+          className={`w-full `}
         >
-          {t("promo_code.percentage_label")}
+          {("category ")}
         </Button>
       ),
       cell: ({ row }) => (
-        <div className={`lowercase ${isRTL ? "text-center" : "text-center"}`}>
-          {row.getValue("percentage")}%
+        <div className={` text-center}`}>
+          {row.getValue("category")}
         </div>
       ),
     },
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className={`w-full `}
+        >
+          {("status")}
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        const statusText = statusMap[status as keyof typeof statusMap] || status;
+        const statusClass = status === "2" ? "text-green-600" : "text-yellow-600";
+        
+        return (
+          <div className={`capitalize text-center"} ${statusClass}`}>
+            {(`${statusText}`)}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "due_date",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className={`w-full`}
+        >
+          {("due date")}
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className={`text-center`}>
+          {row.getValue("due_date") || "-"}
+        </div>
+      ),
+    },
+
     {
       id: "actions",
       header: () => (
-        <div className={`text-center ${isRTL ? "text-center" : "text-center"}`}>
-          {t("common.actions_label")}
+        <div className={`text-center`}>
+          {("actions")}
         </div>
       ),
       enableHiding: false,
@@ -96,19 +135,19 @@ export const getPromoCodeColumns = (isRTL: boolean): ColumnDef<Task>[] => {
               size={24}
               className="cursor-pointer hover:text-blue-500"
               onClick={() => onEdit && onEdit(row.original)}
-              aria-label={t("common.edit")}
+              aria-label={("Edit")}
             />
             <Eye
               size={24}
               className="cursor-pointer hover:text-blue-500"
               onClick={() => table.options.meta?.onShow(row.original)}
-              aria-label={t("common.view")}
+              aria-label={("View")}
             />
             <Trash2
               size={24}
               className="cursor-pointer hover:text-red-500"
               onClick={() => onDelete && onDelete(row.original.id)}
-              aria-label={t("common.delete")}
+              aria-label={("Delete")}
             />
           </div>
         );
