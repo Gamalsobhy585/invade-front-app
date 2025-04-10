@@ -20,6 +20,8 @@ export async function logout() {
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Accept-Language': 'en-US'
+
         },
       }
     );

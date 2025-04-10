@@ -23,11 +23,11 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await login(data);
-      const { token, name, email } = response.data;
+      const { token, user_data } = response.data;
 
       setToken(token);
-      setName(name);
-      setEmail(email);
+      setName(user_data.name);
+      setEmail(user_data.email);
       toast.success("Login successful!");
       navigate("/"); 
 

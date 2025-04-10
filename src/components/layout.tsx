@@ -19,53 +19,40 @@ export default function Layout() {
 
 
   return (
-    <div
-      className="p-4 grid grid-cols-5 xl:grid-cols-6 h-screen bg-[#f7f7f7] overflow-hidden"
-    >
-      <aside className="hidden lg:flex flex-col  col-span-1 border  rounded-2xl py-4 bg-background">
-        <div>
-          <header className="flex justify-center items-center pb-4 mx-4 border-b">
-            <Link to="/">
-            <img src="/logo.png" alt="logo" width={50} />
-            </Link>
-          </header>
-          <div className="pt-4">
-            <ul className="flex flex-col gap-4 p-0">
-
-            
-          
-            </ul>
-          </div>
-        </div>
-        <div className="mt-auto px-4">
-          <Button
-            onClick={() => logout()}
-            disabled={isLoggingOut}
-            className=" w-full tex"
-          >
-            Log out
-          </Button>
-        </div>
-      </aside>
-      <main className="flex flex-col col-span-5 lg:col-span-4 xl:col-span-5 px-4 gap-4 overflow-y-scroll">
-      <div className="rounded-2xl w-full bg-background flex items-center justify-between px-4">
-        <div className="flex justify-between items-center gap-2 py-4">
-          <Link to="/profile">
-            <div className="rounded-full border-4 border-primary overflow-hidden">
-             
-            </div>
+    <div className="h-screen grid grid-rows-[auto_1fr] bg-[#f7f7f7] overflow-hidden">
+      {/* Navbar */}
+      <header className="bg-background flex items-center justify-between px-6 py-4 shadow-sm">
+        <div className="flex items-center gap-4">
+          {/* Logo */}
+          <Link to="/">
+            <img src="/logo.png" alt="logo" width={80} />
           </Link>
-          <div className="flex flex-col justify-center items-center">
-            <h3 className="text-xl font-semibold">{name || "Guest"}</h3>
-            <p className="text-muted-foreground">{email || "example@domain.com"}</p>
+  
+          {/* User Info */}
+          <div className="flex items-center gap-3">
+           
+            <div className="flex flex-col">
+              <span className="text-base font-medium">{name || "Guest"}</span>
+              <span className="text-sm text-muted-foreground">{email || "example@domain.com"}</span>
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-end  gap-4 ">
-      
-        </div>
-      </div>
-      <Outlet />
-    </main>
+  
+        {/* Log out button on the right */}
+        <Button
+          onClick={() => logout()}
+          disabled={isLoggingOut}
+          className="text-sm"
+        >
+          Log out
+        </Button>
+      </header>
+  
+      {/* Page Content */}
+      <main className="p-4 overflow-y-auto">
+        <Outlet />
+      </main>
     </div>
   );
+  
 }
