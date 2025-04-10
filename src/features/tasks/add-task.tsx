@@ -15,11 +15,11 @@ import {
   import { toast } from "react-toastify";
   import { Task } from "./type";
   import { useEffect } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select";
 import { Textarea } from "../../components/ui/textarea";
 
   
   interface AddTaskProps {
+    categories?: Array<{ id: number; name: string }>;
     onAdd?: (task: z.infer<typeof taskSchema>) => void; 
     onSubmit?: (task: z.infer<typeof taskSchema>) => void;
     onShow?: (params: { id: string }) => void;
@@ -28,6 +28,8 @@ import { Textarea } from "../../components/ui/textarea";
     initialData?: Task | null;
   }
   export function AddTask({ onAdd, onSubmit, 
+    categories = [],
+
     isViewMode = false, 
     isEditMode = false, 
     initialData  }: AddTaskProps) {
@@ -37,7 +39,7 @@ import { Textarea } from "../../components/ui/textarea";
         defaultValues: {
           title: initialData?.title || "",
           description: initialData?.description || "",
-          status: initialData?.status || "1", 
+          status: initialData?.status === 1 || initialData?.status === 2 ? initialData.status : 1,
           due_date: initialData?.due_date || "",
           category_id: initialData?.category_id || "",
         },
@@ -54,10 +56,12 @@ import { Textarea } from "../../components/ui/textarea";
             description: initialData.description,
             status: initialData.status,
             due_date: initialData.due_date,
-            category_id: initialData.category_id,
+            category_id: (isViewMode || isEditMode) ? initialData.category : initialData.category_id,
           });
         }
-      }, [initialData, form]);
+      }, [initialData, form, isViewMode, isEditMode]);
+      
+      
 
       async function onSubmitHandler(values: z.infer<typeof taskSchema>) {
         try {
@@ -132,20 +136,16 @@ import { Textarea } from "../../components/ui/textarea";
                 Status
               </FormLabel>
               <FormControl>
-                <Select
-                  disabled={isViewMode}
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value}
-                >
-                  <SelectTrigger className="w-full rounded-lg py-6">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">Pending</SelectItem>
-                    <SelectItem value="2">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
+              <select
+              disabled={isViewMode}
+              value={field.value ?? ""}
+              onChange={(e) => field.onChange(Number(e.target.value))}
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">Select status</option>
+              <option value="1">Pending</option>
+              <option value="2">Completed</option>
+            </select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -177,36 +177,40 @@ import { Textarea } from "../../components/ui/textarea";
   
         {/* Category Field */}
         <FormField
-          name="category_id"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel className="w-full block">
-                Category
-              </FormLabel>
-              <FormControl>
-                <Select
-                  disabled={isViewMode}
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value || ""}
-                >
-                  <SelectTrigger className="w-full rounded-lg py-6">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories?.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+  name="category_id"
+  control={form.control}
+  render={({ field }) => (
+    <FormItem className="w-full">
+      <FormLabel>Category</FormLabel>
+      <FormControl>
+        {isViewMode ? (
+          // Display plain text in view mode
+          <Input
+            disabled
+            value={field.value ?? ""}
+            className="disabled:opacity-100 disabled:cursor-default"
+          />
+        ) : (
+          <select
+            disabled={isViewMode}
+            value={field.value ?? ""}
+            onChange={(e) => field.onChange(e.target.value)}
+            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="">Select category</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}  
+              </option>
+            ))}
+          </select>
+        )}
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
   
         {/* Submit Button */}
         {!isViewMode && (

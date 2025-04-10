@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { getCategories } from "../features/tasks/api";
 
 
-const PromoCodes = () => {
+const Tasks = () => {
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,12 +46,16 @@ const PromoCodes = () => {
     }
   };
 
-  const { categoryData, iscategoryDataLoading, isCategoryDataError, categoryError } = useQuery({
+  const { data: categoryData } = useQuery({
+    
     queryKey: ["categories"],
     queryFn: () =>
       getCategories(),
   });
+  console.log("category data",categoryData);
+
         
+
 
   const handleFilterChange = (filterValue: string) => {
     let apiFilterValue = "";
@@ -102,6 +106,15 @@ const PromoCodes = () => {
     },
   });
 
+  const addMutation = useMutation({
+    mutationFn: createTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["tasks", currentPage, searchQuery, filter],
+      });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: deleteTask,
     onSuccess: () => {
@@ -111,14 +124,7 @@ const PromoCodes = () => {
     },
   });
 
-  const addMutation = useMutation({
-    mutationFn: createTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["tasks", currentPage, searchQuery, filter],
-      });
-    },
-  });
+
 
 
 //
@@ -147,10 +153,7 @@ const PromoCodes = () => {
   <title>{t("tasks")}</title>
   </Helmet>
       <TasksTable
-        categories={categoryData?.data || []}
-        isCategoryDataLoading={iscategoryDataLoading}
-        isCategoryDataError={isCategoryDataError}
-        categoryError={categoryError}
+        categories={categoryData || []}
         tasks={data?.data || []}
         isLoading={isLoading}
         error={isError ? error.message : null}
@@ -171,4 +174,4 @@ const PromoCodes = () => {
   );
 };
 
-export default PromoCodes;
+export default Tasks;

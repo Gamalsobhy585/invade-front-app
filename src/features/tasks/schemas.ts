@@ -10,9 +10,9 @@ export const taskSchema = z.object({
     .string()
     .nullable()
     .optional(),
-  status: z.enum(["1", "2"], {
-    errorMap: () => ({ message: ("status of task required ") }),
-  }),
+    status: z.union([z.literal(1), z.literal(2)], {
+      errorMap: () => ({ message: "Status of task required" }),
+    }),
   due_date: z.string().nullable().optional(),
   category_id: z.string().nullable().optional(),
 });

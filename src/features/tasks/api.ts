@@ -134,7 +134,10 @@ export async function getCategories(){
 
       },
     });
+
     const data = await res.json();
+    console.log("data:",data);
+    
     return data.data;
   }catch(error){
     return { success: false, error: error instanceof Error ? error.message : "An unknown error occurred" };

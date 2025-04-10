@@ -26,11 +26,7 @@ import { getTaskColumns } from "./columns";
 
 interface TasksTableProps {
   tasks: Task[];
-  categories:Category;
-  isCategoryDataLoading:boolean;
-  isCategoryDataError:boolean;
-  categoryError:string;
-  
+  categories: Category[];
   isLoading: boolean;
   error: string | null;
   currentPage: number;
@@ -47,7 +43,7 @@ interface TasksTableProps {
     
   onAdd: (task: {
     title: string;
-    status: "1" | "2";
+    status: 1 | 2;
     description?: string | null;
     due_date?: string | null;
     category_id?: string | null;
@@ -63,9 +59,6 @@ export function TasksTable({
   filter,
   onFilterChange,
   categories,
-  isCategoryDataLoading,
-  isCategoryDataError,
-  categoryError,
   onSearchChange,
   onDelete,
   onAdd,
@@ -155,7 +148,15 @@ export function TasksTable({
         />
       </DialogTrigger>
       <DialogContent className="w-1/3 md:rounded-3xl">
-        <AddTask onAdd={onAdd} />
+        <AddTask
+        categories={categories.map((category) => ({
+          ...category,
+          id: category.id,
+        }))}
+
+        onAdd={onAdd}
+
+        />
       </DialogContent>
     </Dialog>
     <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
@@ -164,6 +165,10 @@ export function TasksTable({
           isViewMode={true} 
           initialData={selectedTask} 
           onShow={onShow} 
+          categories={categories.map((category) => ({
+            ...category,
+            id: category.id,
+          }))}
         />
       </DialogContent>
     </Dialog>
@@ -172,6 +177,11 @@ export function TasksTable({
         <AddTask
           isEditMode={true}
           initialData={selectedTask}
+          categories={categories.map((category) => ({
+            ...category,
+            id: category.id,
+          }))}
+
           onSubmit={(data) =>
             selectedTask && onUpdate({ id: selectedTask.id, data })
           }

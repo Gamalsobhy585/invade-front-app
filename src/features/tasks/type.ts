@@ -5,16 +5,14 @@ export interface Task {
   id: string;
   title: string;
   description: string | null;
-  status: "1" | "2"; 
+  status: 1 | 2; 
   due_date: string | null;
   category: string;
   category_id: string | null;
 }
 
 export interface Category {
-  id: string;
-  ar_name: string;
-  en_name: string;
+  id: number;
   name: string; 
 }
 
@@ -24,6 +22,6 @@ export type UpdateTaskVariables = {
 };
 
 export const statusMap = {
-  "1": "pending",
-  "2": "completed"
+  1: "pending",
+  2: "completed"
 };
