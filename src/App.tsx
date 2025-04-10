@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Layout from "./components/layout";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,30 +7,21 @@ import { ToastContainer } from "react-toastify";
 import { UserContextProvider } from "./Context/UserContext";
 import Loader from "./components/loader";
 
-const Home = React.lazy(() => import("./pages/home"));
 const Login = React.lazy(() => import("./pages/login"));
-const Products = React.lazy(() => import("./pages/products"));
+const Register = React.lazy(() => import("./pages/register"));
+const Tasks = React.lazy(() => import("./pages/tasks"));
 const Profile = React.lazy(() => import("./pages/profile"));
-const PromoCodes = React.lazy(() => import("./pages/PromoCodes"));
 
 
-type Role = "Admin" | "Sub Admin";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles: Role[];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  allowedRoles,
 }) => {
-  const role = localStorage.getItem("role") as Role | null;
 
-  if (!role || !allowedRoles.includes(role)) {
-    console.log(allowedRoles, role);
-    return <Navigate to="/" />;
-  }
 
   return <>{children}</>;
 };
@@ -39,9 +30,7 @@ const App: React.FC = () => {
   const queryClient = new QueryClient();
 
   const userRoutes = [
-    { path: "/", element: <Home /> },
-    { path: "/products", element: <Products /> },
-    { path: "/promo-code", element: <PromoCodes /> },
+    { path: "/", element: <Tasks /> },
     { path: "/profile", element: <Profile /> },
   
   ];
@@ -77,7 +66,7 @@ const App: React.FC = () => {
                     key={path}
                     path={path}
                     element={
-                      <ProtectedRoute allowedRoles={["Admin"]}>
+                      <ProtectedRoute>
                         {element}
                       </ProtectedRoute>
                     }
@@ -85,6 +74,7 @@ const App: React.FC = () => {
                 ))}
               </Route>
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
             </Routes>
           </Suspense>
         </BrowserRouter>

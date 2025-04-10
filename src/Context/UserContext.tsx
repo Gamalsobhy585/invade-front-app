@@ -13,21 +13,17 @@ export const useUserContext = () => {
 
 export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
-  const [role, setRole] = useState<string | null>(localStorage.getItem("role"));
   const [name, setName] = useState<string | null>(localStorage.getItem("name"));
   const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
-  const [image, setImage] = useState<string | null>(localStorage.getItem("image"));
 
   useEffect(() => {
     token ? localStorage.setItem("token", token) : localStorage.removeItem("token");
-    role ? localStorage.setItem("role", role) : localStorage.removeItem("role");
     name ? localStorage.setItem("name", name) : localStorage.removeItem("name");
     email ? localStorage.setItem("email", email) : localStorage.removeItem("email");
-    image ? localStorage.setItem("image", image) : localStorage.removeItem("image");
-  }, [token, role, name, email, image]);
+  }, [token, name, email]);
 
   return (
-    <UserContext.Provider value={{ token, role, name, email, image, setToken, setRole, setName, setEmail, setImage }}>
+    <UserContext.Provider value={{ token, name, email, setToken, setName, setEmail }}>
       {children}
     </UserContext.Provider>
   );

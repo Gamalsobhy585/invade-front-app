@@ -1,14 +1,16 @@
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from "../../lib/utils";
+import { Button } from "../../components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Link } from "react-router-dom";
 
 interface LoginFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -35,7 +37,7 @@ export function LoginForm({
     >
       <Card className="z-50 rounded-2xl">
         <CardHeader className="items-center">
-          <img src="/logo.webp" alt="logo" width={100} />
+          <img src="/logo.png" alt="logo" width={100} />
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>Welcome!</CardDescription>
         </CardHeader>
@@ -61,6 +63,7 @@ export function LoginForm({
                 <Input
                   id="password"
                   type="password"
+                  placeholder="password"
                   {...register("password")}
                 />
                 {errors.password && (
@@ -77,6 +80,14 @@ export function LoginForm({
             </div>
           </form>
         </CardContent>
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-pink-600 hover:underline">
+              Register now
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );
