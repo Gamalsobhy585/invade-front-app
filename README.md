@@ -1,54 +1,38 @@
-# React + TypeScript + Vite
+# Frontend Setup for Task Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## About This Project
 
-Currently, two official plugins are available:
+This is the frontend application for the Task Management System built for **Invade Solutions**. This React-based frontend interfaces with the Laravel backend API to provide a complete task management solution. The project was developed as a test assessment for Invade Solutions.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation Instructions
 
-## Expanding the ESLint configuration
+Follow these steps to set up the frontend application:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+git clone https://github.com/Gamalsobhy585/invade-front-app.git
+cd invade-front-app
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔐 Default Credentials
+- **Email:** user@invade.com
+- **Password:** 123456789
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Technical Stack
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### **Frontend (React + TypeScript + Vite)**
+
+| Feature | Implementation Details |
+|---------|------------------------|
+| **State Management** | React Query + Context API |
+| **UI Library** | ShadCN UI Components |
+| **Routing** | React Router |
+| **Forms** | React Hook Form |
+
+## Frontend Enhancements:
+
+- Enhanced modularity by separating types, APIs, and components
+- Utilized **ShadCN** for UI components
+- Optimized performance using caching with **React Query**
+- Implemented pagination
